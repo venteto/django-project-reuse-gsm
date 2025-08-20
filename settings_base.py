@@ -117,7 +117,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'd2_gsm.wsgi.application'
+# this is not the file used by PythonAnywhere
+WSGI_APPLICATION = 'd2_gsm.wsgi_local.application'
 
 
 # Database
