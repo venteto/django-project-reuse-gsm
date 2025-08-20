@@ -86,7 +86,14 @@ ROOT_URLCONF = 'd1_project.urls_root'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+
+        # MODIFIED
+        # this will not work if you reuse settings as a PyPI package
+        # it only works as a git submodule or subtree
+        'DIRS': [
+            BASE_DIR / 'd2_gsm' / 'templates',
+        ],
+
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
