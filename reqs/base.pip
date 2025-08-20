@@ -2,3 +2,4 @@ Django==5.2.5
 django-environ==0.12.0
 django-htmlmin==0.11.0
 django-tree-queries==0.20.0
+djangoql==0.18.1
