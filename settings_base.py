@@ -3,30 +3,39 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# env = environ.Env(DEBUG=(bool, False))
-# DEBUG = env('DEBUG')
-env = environ.Env()
+env = environ.Env(
+    DEBUG=(bool, False),
+    ALLOWED_HOSTS=(list, []),
+)
 
 environ.Env.read_env(BASE_DIR / '../sync/aux' / 'prod.env')
 environ.Env.read_env(BASE_DIR / '../sync/aux_reuse' / 'any.env')
 
 SECRET_KEY = env('DJANGO_SECRET_KEY')
+
 ADMIN_PATH = env('DJANGO_ADMIN_PATH')
+
 PROJECT_NAME = env('DJANGO_PROJECT_NAME')
+
 ENV_NAME = env('DJANGO_ENV_NAME', default='prod')
 
 if ENV_NAME == 'dev':
+
     DEBUG = True
-    ALLOWED_HOSTS = ['127.0.0.1']
+
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
+
     DATABASES = {'default': {'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / '../local/db' / 'dev.sqlite3',}}
-    # FIXME AFTER TESTING
-    ADMIN_HEADER_BG = 'pink'  # darker green
-    # ADMIN_HEADER_BG = '#008c00'  # darker green
+
+    ADMIN_HEADER_BG = '#008c00'  # darker green
+
 else:
-    # FIXME
-    ALLOWED_HOSTS = ['noyo.pythonanywhere.com']
+
+    ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS')
+
     DATABASES = { 'default': env.db_url('DATABASE_URL'), }
+
     ADMIN_HEADER_BG = '#8c0000'  # darker red
 
 
