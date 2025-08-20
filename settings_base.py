@@ -1,5 +1,6 @@
 import environ
 from pathlib import Path
+from django.conf.locale.en import formats as en_formats
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,12 +28,12 @@ else:
     DATABASES = { 'default': env.db_url('DATABASE_URL'), }
     ADMIN_HEADER_BG = '#8c0000'  # darker red
 
-STATICFILES_DIRS = [
-    BASE_DIR / 'd1_project' / 'static',
-    BASE_DIR / 'd2_gsm' / 'static',
-]
+en_formats.DATETIME_FORMAT = 'Y-m-d · H:i:s e'  # •
+en_formats.DATE_FORMAT = 'Y-m-d'
 
-STATIC_ROOT = BASE_DIR / 'static_root'
+# GA4_ID
+# emailer API key
+# SITE_ID = 1
 
 # ------------------------------------------------------------------------------
 #           `startproject` remaining boilerplate
@@ -65,12 +66,26 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 # INSTALLED_APPS = [
 BASE_APPS = [
     'django.contrib.admin',
-    'django.contrib.auth',
+    'd2_gsm.renames.ContribAuth',   # 'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'django.contrib.humanize',      # to render integers in templates
+    # 'd2_gsm.renames.ContribSites',  # 'django.contrib.sites',
+    'djangoql',                     # more powerful admin querying
+    # 'd2_gsm._core_app',             # custom user model, templatetags, tz, geo, etc
+
+    # --------------------------------------------------------------------------
+    #                       optional extra apps
+    # --------------------------------------------------------------------------
+    # 'compressor'
+    # 'django_distill',             # for static site generation
+    # 'django_cachekiller',         # for static site generation
 ]
+
+# AUTH_USER_MODEL = 'core_app.CustomUser'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -80,6 +95,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'htmlmin.middleware.HtmlMinifyMiddleware',    # ADDED, third-party
+    'htmlmin.middleware.MarkRequestMiddleware',   # ADDED, third-party
+
+    'd2_gsm.middleware_reuse.TimezoneMiddleware'  # ADDED
 ]
 
 ROOT_URLCONF = 'd1_project.urls_root'
@@ -90,8 +110,9 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
 
         # MODIFIED
-        # this will not work if you reuse settings as a PyPI package
-        # it only works as a git submodule or subtree
+        # this will not work if you reuse settings as a PyPI package,
+        # as the package has no way to determine the BASE_DIR;
+        # this only works as a git submodule or subtree
         'DIRS': [
             BASE_DIR / 'd1_project' / 'templates',
             BASE_DIR / 'd2_gsm' / 'templates',
@@ -104,7 +125,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
         
-                # added
+                # ADDED
                 'd2_gsm.context_reuse.general',
             ],
         },
@@ -155,6 +176,15 @@ USE_TZ = True
 
 # STATIC_URL = 'static/'
 STATIC_URL = '/static/'
+
+# ADDED
+STATICFILES_DIRS = [
+    BASE_DIR / 'd1_project' / 'static',
+    BASE_DIR / 'd2_gsm' / 'static',
+]
+
+# ADDED
+STATIC_ROOT = BASE_DIR / 'static_root'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
