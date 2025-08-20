@@ -1,0 +1,3 @@
+-r base.pip
+
+pip-autoremove==0.10.0
